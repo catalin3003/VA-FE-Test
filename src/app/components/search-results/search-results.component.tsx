@@ -41,7 +41,16 @@ export default async function SearchResultsComponent({
   return (
     <section>
       <h2>{results?.holidays?.length} results found</h2>
-      <p>Please fill out the filters and results list below&hellip;</p>
+      {/* <p>Please fill out the filters and results list below&hellip;</p> */}
+      <div>
+      {results.holidays.map((holiday, index) => (
+        <div key={index}>
+          <h3>{holiday.hotel.name}</h3>
+          <p>Price per person: {holiday.pricePerPerson}</p>
+          <p>Star rating: {holiday.hotel.content.starRating}</p>
+        </div>
+      ))}
+    </div>
     </section>
   );
 }
