@@ -48,7 +48,7 @@ export interface HotelContent {
   hotelLocation: string[]
   accommodationType: string[]
   hotelFacilities: string[]
-  starRating: number | string
+  starRating: StarRating
   propertyType: string
 }
 
@@ -58,4 +58,21 @@ export interface HotelImage {
 
 export interface Image {
   url: string
+}
+
+export interface SearchResultsComponentProps {
+  searchParams: { [key: string]: string | string[] | undefined }
+}
+
+export type StarRating = number | string
+
+export interface FilterCriteria {
+  priceRange?: [number, number]
+  facilities?: string[]
+  starRatings?: StarRating[]
+}
+
+export interface FiltersProps {
+  onFilterChange: (filters: FilterCriteria) => void
+  searchResults: BookingResponse
 }

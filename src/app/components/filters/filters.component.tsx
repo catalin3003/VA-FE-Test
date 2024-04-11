@@ -1,19 +1,46 @@
-import { BookingResponse } from '@/types/booking';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
-interface FiltersProps {
-  onFilterChange: (filters: any) => void;
-  searchResults: BookingResponse;
-}
+import type { FiltersProps, StarRating } from '@/types/booking';
+import styles from './filters.module.css';
 
+/**
+ * Component for selecting filters to apply to search results.
+ * @param {FiltersProps} props - The props for the component.
+ */
 const Filters: React.FC<FiltersProps> = ({ onFilterChange, searchResults }) => {
   const [selectedPriceRange, setSelectedPriceRange] = useState<[number, number] | undefined>();
   const [selectedFacilities, setSelectedFacilities] = useState<string[]>([]);
-  const [selectedStarRatings, setSelectedStarRatings] = useState<number[]>([]);
+  const [selectedStarRatings, setSelectedStarRatings] = useState<StarRating[]>([]);
 
-  // Extract unique facilities and star ratings from searchResults
-  const uniqueFacilities = Array.from(new Set(searchResults.holidays.flatMap((h: any) => h.hotel.content.hotelFacilities)));
-  const uniqueStarRatings = Array.from(new Set(searchResults.holidays.map((h: any) => h.hotel.content.starRating))).filter(Boolean);
+  // Memoize unique facilities, star ratings, and price range
+  const { uniqueFacilities, uniqueStarRatings, priceRange } = useMemo(() => {
+    const facilitiesSet = new Set<string>();
+    const starRatingsSet = new Set<StarRating>();
+    let minPrice = Infinity;
+    let maxPrice = -Infinity;
+
+    searchResults.holidays.forEach(holiday => {
+      holiday.hotel.content.hotelFacilities.forEach(facility => facilitiesSet.add(facility));
+      
+      const starRating = Number(holiday.hotel.content.starRating);
+      if (!isNaN(starRating)) {
+        starRatingsSet.add(starRating);
+      }
+
+      minPrice = Math.min(minPrice, holiday.pricePerPerson);
+      maxPrice = Math.max(maxPrice, holiday.pricePerPerson);
+
+      if (holiday.hotel.content.starRating === 'Villas') {
+        starRatingsSet.add('Villas');
+      }
+    });
+
+    return {
+      uniqueFacilities: Array.from(facilitiesSet),
+      uniqueStarRatings: Array.from(starRatingsSet).filter(Boolean),
+      priceRange: minPrice !== Infinity ? [minPrice, maxPrice] : undefined,
+    };
+  }, [searchResults]);
 
   // Call onFilterChange whenever filters change
   useEffect(() => {
@@ -25,51 +52,81 @@ const Filters: React.FC<FiltersProps> = ({ onFilterChange, searchResults }) => {
   }, [selectedPriceRange, selectedFacilities, selectedStarRatings, onFilterChange]);
 
   // Handlers for changing filters
-  const handlePriceRangeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const [min, max] = e.target.value.split('-').map(Number);
-    setSelectedPriceRange([min, max]);
+  const handleFacilitiesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const facility = e.target.value;
+    setSelectedFacilities(prev =>
+      e.target.checked ? [...prev, facility] : prev.filter(f => f !== facility)
+    );
   };
-
-  const handleFacilitiesChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const options = e.target.options;
-    const value: string[] = [];
-    for (let i = 0; i < options.length; i++) {
-      if (options[i].selected) {
-        value.push(options[i].value);
+  
+  const handleStarRatingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const ratingValue = e.target.value;
+    let rating: StarRating = isNaN(parseInt(ratingValue)) ? ratingValue : parseInt(ratingValue);
+  
+    setSelectedStarRatings(prev => {
+      if (e.target.checked) {
+        // Add the rating if it's not already in the array
+        return prev.includes(rating) ? prev : [...prev, rating];
+      } else {
+        // Remove the rating if it exists in the array
+        return prev.filter(r => r !== rating);
       }
-    }
-    setSelectedFacilities(value);
+    });
   };
-
-  const handleStarRatingChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const options = e.target.options;
-    const value: number[] = [];
-    for (let i = 0; i < options.length; i++) {
-      if (options[i].selected) {
-        value.push(parseInt(options[i].value));
-      }
-    }
-    setSelectedStarRatings(value);
-  };
-
+  
   return (
-    <div>
-      <select multiple={true} onChange={handleFacilitiesChange}>
-        {uniqueFacilities.map(facility => (
-          <option key={facility} value={facility}>{facility}</option>
-        ))}
-      </select>
+    <div className={styles.filters}>
+      {/* Price Range Filter */}
+      <div>
+        <label>Price Range:</label>
+        {priceRange && (
+          <input
+            type="range"
+            min={priceRange[0]}
+            max={priceRange[1]}
+            value={selectedPriceRange ? selectedPriceRange[1] : priceRange[1]}
+            onChange={(e) => setSelectedPriceRange([priceRange[0], parseInt(e.target.value)])}
+          />
+        )}
+      </div>
 
-      <select multiple={true} onChange={handleStarRatingChange}>
-        {uniqueStarRatings.map(rating => (
-          <option key={rating} value={rating}>{rating} stars</option>
+      {/* Facilities Filter */}
+      <div>
+        <label>Facilities:</label>
+        {uniqueFacilities.map((facility) => (
+          <div key={facility}>
+            <input
+              type="checkbox"
+              id={`facility-${facility}`}
+              name="facilities"
+              value={facility}
+              checked={selectedFacilities.includes(facility)}
+              onChange={handleFacilitiesChange}
+            />
+            <label htmlFor={`facility-${facility}`}>{facility}</label>
+          </div>
         ))}
-      </select>
-      <select onChange={handlePriceRangeChange}>
-        <option value="0-1000">£0 - £1000</option>
-        <option value="1000-2000">£1000 - £2000</option>
-        <option value="2000-99999999">more than £2000</option>
-      </select>
+      </div>
+
+      {/* Star Ratings Filter */}
+      <div>
+        <label>Star Ratings:</label>
+        {uniqueStarRatings.map((rating) => (
+          <div key={String(rating)}>
+            <input
+              type="checkbox"
+              id={`star-${rating}`}
+              name="starRatings"
+              value={rating}
+              checked={selectedStarRatings.includes(rating)}
+              onChange={handleStarRatingChange}
+            />
+            <label htmlFor={`star-${rating}`}>
+              {typeof rating === 'number' ? `${rating} Star${rating > 1 ? 's' : ''}` : rating}
+            </label>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

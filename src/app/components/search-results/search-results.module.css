@@ -1,0 +1,37 @@
+.searchResults {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+.searchResultsContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+.searchResult {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  width: 200px;
+}
+.searchResult img {
+  width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+}
+.searchResult h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+}
+.searchResult p {
+  font-size: 1rem;
+  text-align: center;
+}

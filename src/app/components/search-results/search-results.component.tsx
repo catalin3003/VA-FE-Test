@@ -1,18 +1,18 @@
 "use client";
-import { BookingResponse, Holiday } from "@/types/booking";
+
+import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import isEqual from 'lodash/isEqual';
-import { Rooms } from "@/utils/composition.service";
-import { useEffect, useState } from "react";
-import Filters from "../filters/filters.component";
 
-interface FilterCriteria {
-  priceRange?: [number, number];
-  facilities?: string[];
-  starRatings?: number[];
-}
+import Filters from '../filters/filters.component';
+import Loading from '@/app/results/loading';
+import styles from './search-results.module.css';
+import { Rooms } from '@/utils/composition.service';
+
+import type { BookingResponse, FilterCriteria, Holiday, SearchResultsComponentProps } from "@/types/booking";
 
 
-async function getData(params: { [key: string]: string | string[] | undefined }) {
+async function getData(params: SearchResultsComponentProps["searchParams"]) {
   const body = {
     bookingType: params.bookingType,
     direct: false,
@@ -41,11 +41,11 @@ async function getData(params: { [key: string]: string | string[] | undefined })
   return res.json();
 }
 
-export default function SearchResultsComponent({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) {
+/**
+ * Component to display search results and handle filtering.
+ * @param {SearchResultsComponentProps} props - The props for the component.
+ */
+const SearchResultsComponent: React.FC<SearchResultsComponentProps> = ({ searchParams }) => {
   const [results, setResults] = useState<BookingResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [filteredHolidays, setFilteredHolidays] = useState<Holiday[]>([]);
@@ -54,7 +54,6 @@ export default function SearchResultsComponent({
     facilities: [],
     starRatings: [],
   });
-
 
   // Fetch data on component mount or when searchParams change
   useEffect(() => {
@@ -92,10 +91,13 @@ export default function SearchResultsComponent({
       );
     }
 
-    if (filters.starRatings && filters.starRatings?.length > 0) {
-      filteredResults = filteredResults.filter(holiday =>
-        (filters.starRatings ?? []).includes(Number(holiday.hotel.content.starRating))
-      );
+    if (filters.starRatings && filters.starRatings.length > 0) {
+      filteredResults = filteredResults.filter(holiday => {
+        const holidayRating = holiday.hotel.content.starRating;
+        return (filters.starRatings ?? []).some(rating =>
+          typeof rating === 'number' ? holidayRating === rating.toString() : holidayRating === rating
+        );
+      });
     }
 
     setFilteredHolidays(filteredResults);
@@ -113,7 +115,7 @@ export default function SearchResultsComponent({
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
 
   if (!results || results.holidays.length === 0) {
@@ -122,17 +124,24 @@ export default function SearchResultsComponent({
 
   return (
     <>
-      <div>{results.holidays.length} results found</div>
+      <div className={styles.searchResults}>{results.holidays.length} results found</div>
       <Filters onFilterChange={handleFilterChange} searchResults={results}/>
-      <ul style={{ listStyleType: 'none', padding: 0 }}>
+      {/* This needs to be a separate component */}
+      <ul className={styles.searchResultsContainer}>
         {filteredHolidays.length > 0 ? (
           filteredHolidays.map((holiday: Holiday, index: number) => (
-            <li key={index} style={{ marginBottom: '20px', borderBottom: '1px solid #ccc', paddingBottom: '10px' }}>
+            <li key={index} className={styles.searchResults} >
               <div><strong>{holiday.hotel.name}</strong></div>
               <div>Price per person: £{holiday.pricePerPerson.toFixed(2)}</div>
               <div>Total price: £{holiday.totalPrice.toFixed(2)}</div>
               <div>Hotel facilities: {holiday.hotel.content.hotelFacilities.join(', ')}</div>
               <div>Star rating: {holiday.hotel.content.starRating}</div>
+              <Image
+                src={holiday.hotel.content.images[0].RESULTS_CAROUSEL.url.startsWith('//') ? `https:${holiday.hotel.content.images[0].RESULTS_CAROUSEL.url}` : holiday.hotel.content.images[0].RESULTS_CAROUSEL.url}
+                alt={holiday.hotel.name}
+                width={200}
+                height={200}
+              />
             </li>
           ))
         ) : (
@@ -142,3 +151,5 @@ export default function SearchResultsComponent({
     </>
   );
 }
+
+export default SearchResultsComponent;
