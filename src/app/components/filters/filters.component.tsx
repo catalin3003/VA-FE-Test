@@ -82,7 +82,7 @@ const Filters: React.FC<FiltersProps> = ({ onFilterChange, searchResults }) => {
   return (
     <div className={styles.filters}>
       {/* Price Range Filter */}
-      <div className={styles.filterGroup}>
+      <div className={styles.filterGroup} data-testid="priceRange">
         <label className={styles.filterLabel}>Price Range:</label>
         {priceRange && (
           <>
@@ -100,7 +100,7 @@ const Filters: React.FC<FiltersProps> = ({ onFilterChange, searchResults }) => {
       </div>
 
       {/* Facilities Filter */}
-      <div className={styles.filterGroup}>
+      <div className={styles.filterGroup} data-testid="facilities">
         <label className={styles.filterLabel}>Facilities:</label>
         {uniqueFacilities.map((facility) => (
           <div key={facility} className={styles.filterFacility}>
@@ -119,7 +119,7 @@ const Filters: React.FC<FiltersProps> = ({ onFilterChange, searchResults }) => {
       </div>
 
       {/* Star Ratings Filter */}
-      <div className={styles.filterGroup}>
+      <div className={styles.filterGroup} data-testid="starRatings">
         <label className={styles.filterLabel}>Star Ratings:</label>
         {uniqueStarRatings.map((rating) => (
           <div key={String(rating)} className={styles.filterFacility}>
