@@ -1,5 +1,9 @@
 # Virgin Atlantic / Virgin Atlantic Holidays ~ Holiday Search Results (Front-end test)
 
+![Screenshot 2024-04-12 at 09 34 19](https://github.com/catalin3003/VA-FE-Test/assets/24395015/b7a4e465-fcb3-4ff1-9cee-a0c6074f1607)
+
+https://github.com/catalin3003/VA-FE-Test/assets/24395015/cafb0d9a-418d-4d38-b417-859cd0d8ac1c
+
 Thank you for your interest in joining our front-end team and taking the time to do the test. We think it will provide a nice and interesting challenge and a good talking point for the next stage of the process.
 
 ## Rules
