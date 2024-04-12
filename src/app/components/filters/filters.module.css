@@ -5,7 +5,7 @@
   margin-bottom: 20px;
   padding: 15px;
   border: 1px solid #ddd;
-  border-radius: 8px;
+  border-radius: 4px;
   background-color: #f9f9f9;
   width: 40%;
 }
@@ -38,7 +38,29 @@
 }
 
 .rangeInput {
+  -webkit-appearance: none;
   width: 100%;
+  height: 8px;
+  background: #E10A0A;
+  outline: none;
+}
+
+.rangeInput::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #E10A0A;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.filters .rangeInput::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: #E10A0A;
+  cursor: pointer;
+  border-radius: 50%;
 }
 
 .priceValue {

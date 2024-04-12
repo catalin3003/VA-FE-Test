@@ -1,12 +1,14 @@
-"use client"; // useState and useEffect are Client Components
+"use client";
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Image from 'next/image';
+
 import Filters from '../filters/filters.component';
 import Loading from '@/app/results/loading';
 import styles from './search-results.module.css';
 
 import type { SearchResultsComponentProps, Holiday } from "@/types/booking";
+
 import useHolidays from '@/hooks/use-holidays.hook';
 
 const SearchResultsComponent: React.FC<SearchResultsComponentProps> = ({ searchParams }) => {
@@ -51,6 +53,7 @@ const SearchResultsComponent: React.FC<SearchResultsComponentProps> = ({ searchP
                     width={300}
                     height={200}
                     objectFit="cover"
+                    layout='responsive'
                   />
                 </div>
                 <div className={styles.searchResultDetails}>
@@ -58,12 +61,12 @@ const SearchResultsComponent: React.FC<SearchResultsComponentProps> = ({ searchP
                   <p>Price per person: £{holiday.pricePerPerson.toFixed(2)}</p>
                   <p>Facilities: {holiday.hotel.content.hotelFacilities.join(', ')}</p>
                   <p>Total price: £{holiday.totalPrice.toFixed(2)}</p>
-                  <p>{holiday.hotel.content.starRating ? renderRating(holiday.hotel.content.starRating) : renderRating(holiday.hotel.content.vRating)}</p>
+                  <p className={styles.starRating}>{holiday.hotel.content.starRating ? renderRating(holiday.hotel.content.starRating) : renderRating(holiday.hotel.content.vRating)}</p>
                 </div>
               </li>
             ))
           ) : (
-            <li>No results found for the selected filters.</li>
+            <p>No results found for the selected filters.</p>
           )}
         </ul>
       </div>
