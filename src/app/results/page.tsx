@@ -9,8 +9,6 @@ export default function Results({
 }) {
   return (
     <>
-      <h1>Search results</h1>
-
       <Suspense fallback={<Loading />}>
         <SearchResultsComponent searchParams={searchParams} />
       </Suspense>
