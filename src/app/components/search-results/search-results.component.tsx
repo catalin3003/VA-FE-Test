@@ -122,32 +122,59 @@ const SearchResultsComponent: React.FC<SearchResultsComponentProps> = ({ searchP
     return <div>No results found.</div>;
   }
 
+  /**
+ * Renders a rating as stars or a special symbol/text based on the input.
+ *
+ * @param {number | string} rating - The rating value which can be a number or a string.
+ * @returns {JSX.Element} A JSX Element representing the visual rating.
+ */
+const renderRating = (rating: number | string): JSX.Element => {
+  const numericRating = parseInt(String(rating), 10);
+
+  if (!isNaN(numericRating)) {
+    return <span>{'★'.repeat(numericRating)}</span>;
+  } else if (typeof rating === 'string' && (rating.toLowerCase() === 'villas' || rating === 'NA')) {
+    return <span>🏡 VILLA</span>;
+  } else {
+    return <span>{rating}</span>;
+  }
+};
+
   return (
-    <>
-      <div className={styles.searchResults}>{results.holidays.length} results found</div>
-      <Filters onFilterChange={handleFilterChange} searchResults={results}/>
-      {/* This needs to be a separate component */}
-      <ul className={styles.searchResultsContainer}>
-        {filteredHolidays.length > 0 ? (
-          filteredHolidays.map((holiday: Holiday, index: number) => (
-            <li key={index} className={styles.searchResults} >
-              <div><strong>{holiday.hotel.name}</strong></div>
-              <div>Price per person: £{holiday.pricePerPerson.toFixed(2)}</div>
-              <div>Total price: £{holiday.totalPrice.toFixed(2)}</div>
-              <div>Hotel facilities: {holiday.hotel.content.hotelFacilities.join(', ')}</div>
-              <div>Star rating: {holiday.hotel.content.starRating}</div>
-              <Image
-                src={holiday.hotel.content.images[0].RESULTS_CAROUSEL.url.startsWith('//') ? `https:${holiday.hotel.content.images[0].RESULTS_CAROUSEL.url}` : holiday.hotel.content.images[0].RESULTS_CAROUSEL.url}
-                alt={holiday.hotel.name}
-                width={200}
-                height={200}
-              />
-            </li>
-          ))
-        ) : (
-          <li>No results found for the selected rating.</li>
-        )}
-      </ul>
+      <>
+      <div className={styles.searchResultsHeader}>
+        <h1 className={styles.searchResultsTitle}>Search Results</h1>
+        <span className={styles.searchResultsCount}>{filteredHolidays.length} results found</span>
+      </div>
+      <div className={styles.searchResultsContainer}>
+        <Filters onFilterChange={handleFilterChange} searchResults={results}/>
+        <ul className={styles.searchResultsList}>
+          {filteredHolidays.length > 0 ? (
+            filteredHolidays.map((holiday: Holiday, index: number) => (
+              <li key={index} className={styles.searchResult}>
+                <div className={styles.searchResultImage}>
+                  <Image
+                    src={holiday.hotel.content.images[0].RESULTS_CAROUSEL.url.startsWith('//') ? `https:${holiday.hotel.content.images[0].RESULTS_CAROUSEL.url}` : holiday.hotel.content.images[0].RESULTS_CAROUSEL.url}
+                    alt={holiday.hotel.name}
+                    width={300}
+                    height={200}
+                    objectFit="cover"
+                  />
+                </div>
+                <div className={styles.searchResultDetails}>
+                  <h3>{holiday.hotel.name}</h3>
+                  <p>Price per person: £{holiday.pricePerPerson.toFixed(2)}</p>
+                  <p>Total price: £{holiday.totalPrice.toFixed(2)}</p>
+                  <p>Hotel facilities: {holiday.hotel.content.hotelFacilities.join(', ')}</p>
+                  <p>{holiday.hotel.content.starRating ? renderRating(holiday.hotel.content.starRating) : renderRating(holiday.hotel.content.vRating)}</p>
+                </div>
+              </li>
+            ))
+          ) : (
+            <li>No results found for the selected filters.</li>
+          )}
+        </ul>
+      </div>
     </>
   );
 }

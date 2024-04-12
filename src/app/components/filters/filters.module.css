@@ -1,5 +1,52 @@
-.filter {
+.filters {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  justify-content: flex-start;
   margin-bottom: 20px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  width: 40%;
+}
+
+.filterGroup {
+  margin-bottom: 15px;
+}
+
+.filterGroup:last-child {
+  margin-bottom: 0;
+}
+
+.filterLabel {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.filterInput {
+  margin-right: 10px;
+}
+
+.filterFacility {
+  display: flex;
+  align-items: center;
+}
+
+.filterFacility + .filterFacility {
+  margin-top: 5px;
+}
+
+.rangeInput {
+  width: 100%;
+}
+
+.priceValue {
+  margin-left: 10px;
+}
+
+@media (max-width: 768px) {
+  .filters {
+    width: 100%;
+  }
 }

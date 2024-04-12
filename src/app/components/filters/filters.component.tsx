@@ -36,8 +36,13 @@ const Filters: React.FC<FiltersProps> = ({ onFilterChange, searchResults }) => {
     });
 
     return {
-      uniqueFacilities: Array.from(facilitiesSet),
-      uniqueStarRatings: Array.from(starRatingsSet).filter(Boolean),
+      uniqueFacilities: Array.from(facilitiesSet).sort(),
+      uniqueStarRatings: Array.from(starRatingsSet).sort((a, b) => {
+        if (typeof a === 'string' || typeof b === 'string') {
+          return String(a).localeCompare(String(b));
+        }
+        return a - b;
+      }),
       priceRange: minPrice !== Infinity ? [minPrice, maxPrice] : undefined,
     };
   }, [searchResults]);
@@ -77,25 +82,30 @@ const Filters: React.FC<FiltersProps> = ({ onFilterChange, searchResults }) => {
   return (
     <div className={styles.filters}>
       {/* Price Range Filter */}
-      <div>
-        <label>Price Range:</label>
+      <div className={styles.filterGroup}>
+        <label className={styles.filterLabel}>Price Range:</label>
         {priceRange && (
-          <input
-            type="range"
-            min={priceRange[0]}
-            max={priceRange[1]}
-            value={selectedPriceRange ? selectedPriceRange[1] : priceRange[1]}
-            onChange={(e) => setSelectedPriceRange([priceRange[0], parseInt(e.target.value)])}
-          />
+          <>
+            <input
+              className={styles.rangeInput}
+              type="range"
+              min={priceRange[0]}
+              max={priceRange[1]}
+              value={selectedPriceRange ? selectedPriceRange[1] : priceRange[1]}
+              onChange={(e) => setSelectedPriceRange([priceRange[0], parseInt(e.target.value)])}
+            />
+            <span className={styles.priceValue}>Max: £{selectedPriceRange ? selectedPriceRange[1] : priceRange[1]}</span>
+          </>
         )}
       </div>
 
       {/* Facilities Filter */}
-      <div>
-        <label>Facilities:</label>
+      <div className={styles.filterGroup}>
+        <label className={styles.filterLabel}>Facilities:</label>
         {uniqueFacilities.map((facility) => (
-          <div key={facility}>
+          <div key={facility} className={styles.filterFacility}>
             <input
+              className={styles.filterInput}
               type="checkbox"
               id={`facility-${facility}`}
               name="facilities"
@@ -109,11 +119,12 @@ const Filters: React.FC<FiltersProps> = ({ onFilterChange, searchResults }) => {
       </div>
 
       {/* Star Ratings Filter */}
-      <div>
-        <label>Star Ratings:</label>
+      <div className={styles.filterGroup}>
+        <label className={styles.filterLabel}>Star Ratings:</label>
         {uniqueStarRatings.map((rating) => (
-          <div key={String(rating)}>
+          <div key={String(rating)} className={styles.filterFacility}>
             <input
+              className={styles.filterInput}
               type="checkbox"
               id={`star-${rating}`}
               name="starRatings"
