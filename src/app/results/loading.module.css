@@ -1,0 +1,49 @@
+.fullScreenLoader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 9999;
+}
+
+.loadingBar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 30px;
+  background-color: #ff004c;
+  z-index: 9999;
+  animation: loadingBarAnimation 2s ease-in-out infinite;
+}
+
+@keyframes loadingBarAnimation {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.backgroundImages {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  z-index: -1;
+  animation: imageTransition 10s steps(1) infinite;
+}
+
+@keyframes imageTransition {
+  0% { background-image: url('../../../public/images/1.jpg'); }
+  33.333% { background-image: url('../../../public/images/1.jpg'); }
+  33.334% { background-image: url('../../../public/images/2.jpg'); }
+  66.666% { background-image: url('../../../public/images/2.jpg'); }
+  66.667% { background-image: url('../../../public/images/3.jpg'); }
+  100% { background-image: url('../../../public/images/3.jpg'); }
+}
