@@ -79,10 +79,10 @@ describe('Composition Parser', () => {
 			const rooms = ['a2,c16,c15,c11,i1'];
 			const parsed = Rooms.parseAndConvert(rooms);
 			expect(parsed).to.not.be.undefined;
-			expect(parsed.length).to.equal(1);
-			expect(parsed[0].adults).to.equal(3);
-			expect(parsed[0].childAges).to.deep.equal([16, 15, 11]);
-			expect(parsed[0].infants).to.equal(1);
+			expect(parsed!.length).to.equal(1); 
+			expect(parsed![0].adults).to.equal(3); 
+			expect(parsed![0].childAges).to.deep.equal([16, 15, 11]); 
+			expect(parsed![0].infants).to.equal(1); 
 		});
 
 		it('should handle invalid child age', () => {
